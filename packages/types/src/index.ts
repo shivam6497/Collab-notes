@@ -2,6 +2,8 @@
 export interface JoinDocPayload {
   docId: string;
   username: string;
+  password?: string;
+  token?: string;
 }
 
 export interface DocUpdatePayload {
