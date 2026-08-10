@@ -44,6 +44,7 @@ function trackClientIDs(
       if (!socketClientMap.has(socketId)) {
         socketClientMap.set(socketId, new Set());
       }
+      
       socketClientMap.get(socketId)!.add({ docId, clientID: key });
     }
   }
