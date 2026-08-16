@@ -16,17 +16,19 @@ import { AppError } from "../middleware/error.middleware.js";
 
 export const authRouter: Router = Router();
 
+const IS_PROD = process.env.NODE_ENV === "production";
+
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  secure: IS_PROD,
+  sameSite: IS_PROD ? "none" as const : "lax" as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 const ACCESS_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  secure: IS_PROD,
+  sameSite: IS_PROD ? "none" as const : "lax" as const,
   maxAge: 15 * 60 * 1000,
 };
 
