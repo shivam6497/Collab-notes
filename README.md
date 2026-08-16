@@ -6,6 +6,15 @@ A real-time collaborative note-taking app built with **Yjs CRDTs**, **Socket.IO*
 
 ---
 
+## UI
+
+<img width="1919" height="996" alt="Screenshot 2026-08-16 204405" src="https://github.com/user-attachments/assets/7812c3b2-e018-4f19-9972-5a82318f9bc3" />
+<img width="1919" height="992" alt="Screenshot 2026-08-16 204430" src="https://github.com/user-attachments/assets/1fd03483-282c-4de4-b895-16b34407e3ff" />
+<img width="1919" height="995" alt="Screenshot 2026-08-16 204442" src="https://github.com/user-attachments/assets/d4addb2e-b76c-4614-b56a-993db73ced46" />
+
+
+
+
 ## ✨ Features
 
 | Category | Details |
