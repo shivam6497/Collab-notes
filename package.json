@@ -1,20 +1,15 @@
 {
-  "name": "Collaborative-notes-app",
+  "name": "collab-notes",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev",
+    "build": "turbo run build",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "type-check": "turbo run type-check"
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
     "turbo": "^2.10.8",
-    "typescript": "5.9.2"
+    "typescript": "^5.5.0"
   },
-  "packageManager": "pnpm@9.0.0",
-  "engines": {
-    "node": ">=18"
-  }
+  "packageManager": "pnpm@9.0.0"
 }
