@@ -137,17 +137,17 @@ router.patch(
   "/:id/share",
   authMiddleware,
   async (req: AuthRequest, res: Response, next: NextFunction) => {
-    const { shareMode, password } = req.body;
-
-    if (!["EDIT", "VIEW", "PASSWORD"].includes(shareMode)) {
-      throw new AppError("Invalid share mode", 400);
-    }
-
-    const hashedPassword = shareMode === "PASSWORD" && password 
-        ?  await bcrypt.hash(password, 10)
-        : null;
-
     try {
+      const { shareMode, password } = req.body;
+
+      if (!["EDIT", "VIEW", "PASSWORD"].includes(shareMode)) {
+        throw new AppError("Invalid share mode", 400);
+      }
+
+      const hashedPassword = shareMode === "PASSWORD" && password 
+          ?  await bcrypt.hash(password, 10)
+          : null;
+
       const doc = await prisma.document.update({
         where: { id: req.params.id, userId: req.user?.userId },
         data: {
@@ -183,11 +183,11 @@ router.get("/:id/share", async (req, res, next: NextFunction) => {
 });
 
 router.post("/:id/verify-password", async (req, res, next: NextFunction) => {
-  const { password } = req.body;
-  if (!password) {
-    throw new AppError("Password required", 400);
-  }
   try {
+    const { password } = req.body;
+    if (!password) {
+      throw new AppError("Password required", 400);
+    }
     const doc = await prisma.document.findUnique({
       where: { id: req.params.id },
       select: { password: true, shareMode: true },

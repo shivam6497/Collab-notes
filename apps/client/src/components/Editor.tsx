@@ -99,6 +99,7 @@ export default function Editor({ docId }: Props) {
   const awarenessRef = useRef<Awareness>(new Awareness(ydocRef.current));
   const usernameRef = useRef<string>(randomUsername());
   const colorRef = useRef<string>(randomColor());
+  const passwordRef = useRef<string | null>(null);
   const router = useRouter();
   const { user } = useAuthStore();
   const titleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -116,6 +117,7 @@ export default function Editor({ docId }: Props) {
   const [accessGranted, setAccessGranted] = useState(false);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [canSave, setCanSave] = useState(true);
+  const [accessChecked, setAccessChecked] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -167,7 +169,57 @@ export default function Editor({ docId }: Props) {
     fetchTitle();
   }, [docId]);
 
+  // ── Access check: runs BEFORE socket connects ──
   useEffect(() => {
+    async function checkAccess() {
+      try {
+        const [shareRes, docRes] = await Promise.all([
+          api.get(`/api/docs/${docId}/share`),
+          api.get(`/api/docs/${docId}`),
+        ]);
+
+        const shareMode = shareRes.data.shareMode;
+        const docUserId = docRes.data.userId;
+        const ownerCheck = user?.id === docUserId;
+
+        setIsOwner(ownerCheck);
+
+        if (docUserId && !ownerCheck) {
+          setCanSave(false);
+        }
+
+        if (shareMode === "PASSWORD" && !ownerCheck) {
+          setRequiresPassword(true);
+          setAccessChecked(true);
+          return;
+        }
+
+        // Access granted (EDIT, VIEW, or owner of PASSWORD doc)
+        setAccessGranted(true);
+        setAccessChecked(true);
+
+        if (shareMode === "VIEW" && !ownerCheck) {
+          editor?.setEditable(false);
+          setIsReadOnly(true);
+        } else {
+          editor?.setEditable(true);
+          setIsReadOnly(false);
+        }
+      } catch (err) {
+        console.error(err);
+        // If access check fails, still allow (public doc fallback)
+        setAccessGranted(true);
+        setAccessChecked(true);
+      }
+    }
+
+    checkAccess();
+  }, [docId, user]);
+
+  // ── Socket: only connects AFTER access is granted ──
+  useEffect(() => {
+    if (!accessGranted) return;
+
     const socket = getSocket();
     const ydoc = ydocRef.current;
     const awareness = awarenessRef.current;
@@ -206,7 +258,7 @@ export default function Editor({ docId }: Props) {
       socket.emit(SOCKET_EVENTS.JOIN_DOC, {
         docId,
         username: usernameRef.current,
-
+        password: passwordRef.current ?? undefined,
         token: document.cookie
           .split("; ")
           .find((row) => row.startsWith("accessToken="))
@@ -257,24 +309,7 @@ export default function Editor({ docId }: Props) {
     };
     ydoc.on("update", onDocUpdate);
 
-    api
-      .get(`/api/docs/${docId}/share`)
-      .then(({ data }) => {
-        if (data.shareMode === "VIEW" && !isOwner) {
-          editor?.setEditable(false);
-        }
-      })
-      .catch(() => {});
     socket.connect();
-
-    if (user) {
-      api
-        .get(`/api/docs/${docId}`)
-        .then(({ data }) => {
-          setIsOwner(data.userId === user.id);
-        })
-        .catch(() => {});
-    }
 
     const onBeforeUnload = () => {
       socket.emit("leave_doc", { docId });
@@ -296,49 +331,7 @@ export default function Editor({ docId }: Props) {
       awareness.setLocalState(null);
       socket.disconnect();
     };
-  }, [docId]);
-
-  useEffect(() => {
-    if (!editor) return;
-
-    async function checkAccess() {
-      try {
-        const [shareRes, docRes] = await Promise.all([
-          api.get(`/api/docs/${docId}/share`),
-          api.get(`/api/docs/${docId}`),
-        ]);
-
-        const shareMode = shareRes.data.shareMode;
-        const docUserId = docRes.data.userId;
-        const ownerCheck = user?.id === docUserId;
-
-        setIsOwner(ownerCheck);
-
-        if (docUserId && !ownerCheck) {
-          setCanSave(false);
-        }
-
-        if (shareMode === "PASSWORD" && !ownerCheck) {
-          setRequiresPassword(true);
-          return;
-        }
-
-        setAccessGranted(true);
-
-        if (shareMode === "VIEW" && !ownerCheck) {
-          editor?.setEditable(false);
-          setIsReadOnly(true);
-        } else {
-          editor?.setEditable(true);
-          setIsReadOnly(false);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    checkAccess();
-  }, [editor, docId, user]);
+  }, [docId, accessGranted]);
 
   async function saveDoc() {
     if (!user) {
@@ -376,7 +369,8 @@ export default function Editor({ docId }: Props) {
     return (
       <PasswordGate
         docId={docId}
-        onSuccess={() => {
+        onSuccess={(pwd) => {
+          passwordRef.current = pwd;
           setAccessGranted(true);
           setRequiresPassword(false);
         }}
@@ -559,3 +553,4 @@ export default function Editor({ docId }: Props) {
     </div>
   );
 }
+

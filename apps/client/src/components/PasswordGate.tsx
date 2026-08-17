@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 
 interface Props {
   docId: string;
-  onSuccess: () => void;
+  onSuccess: (password: string) => void;
 }
 
 export default function PasswordGate({ docId, onSuccess }: Props) {
@@ -20,7 +20,7 @@ export default function PasswordGate({ docId, onSuccess }: Props) {
     setLoading(true);
     try {
       await api.post(`/api/docs/${docId}/verify-password`, { password });
-      onSuccess();
+      onSuccess(password);
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Incorrect password");
     } finally {
@@ -70,4 +70,4 @@ export default function PasswordGate({ docId, onSuccess }: Props) {
       </div>
     </div>
   );
-}
+}
