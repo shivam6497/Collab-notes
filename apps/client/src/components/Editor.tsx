@@ -169,7 +169,6 @@ export default function Editor({ docId }: Props) {
     fetchTitle();
   }, [docId]);
 
-  // ── Access check: runs BEFORE socket connects ──
   useEffect(() => {
     async function checkAccess() {
       try {
@@ -194,7 +193,7 @@ export default function Editor({ docId }: Props) {
           return;
         }
 
-        // Access granted (EDIT, VIEW, or owner of PASSWORD doc)
+
         setAccessGranted(true);
         setAccessChecked(true);
 
@@ -207,7 +206,7 @@ export default function Editor({ docId }: Props) {
         }
       } catch (err) {
         console.error(err);
-        // If access check fails, still allow (public doc fallback)
+
         setAccessGranted(true);
         setAccessChecked(true);
       }
@@ -216,7 +215,6 @@ export default function Editor({ docId }: Props) {
     checkAccess();
   }, [docId, user]);
 
-  // ── Socket: only connects AFTER access is granted ──
   useEffect(() => {
     if (!accessGranted) return;
 
