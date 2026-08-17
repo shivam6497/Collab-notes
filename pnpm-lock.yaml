@@ -135,9 +135,6 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
-      prisma:
-        specifier: ^5.22.0
-        version: 5.22.0
       rate-limiter-flexible:
         specifier: ^11.2.0
         version: 11.2.0
@@ -184,6 +181,9 @@ importers:
       jest:
         specifier: ^30.4.2
         version: 30.4.2(@types/node@22.15.3)
+      prisma:
+        specifier: ^5.22.0
+        version: 5.22.0
       supertest:
         specifier: ^7.2.2
         version: 7.2.2
