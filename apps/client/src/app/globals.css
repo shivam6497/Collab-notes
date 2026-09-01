@@ -1,5 +1,151 @@
 @import "tailwindcss";
 
+/* ── Landing page animations ── */
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-30px) translateX(15px); }
+  66% { transform: translateY(15px) translateX(-10px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(20px) translateX(-20px); }
+  66% { transform: translateY(-25px) translateX(10px); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(-15px); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.8); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes gradient-rotate {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes typing-line {
+  0% { width: 0; }
+  70% { width: 100%; }
+  100% { width: 100%; }
+}
+
+/* Animated gradient border wrapper */
+.animated-border {
+  position: relative;
+  border-radius: 1rem;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--gradient-angle, 0deg),
+    rgba(99, 102, 241, 0.6),
+    rgba(139, 92, 246, 0.3),
+    rgba(99, 102, 241, 0.05),
+    rgba(139, 92, 246, 0.3),
+    rgba(99, 102, 241, 0.6)
+  );
+  animation: gradient-rotate 4s linear infinite;
+}
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Button glow on hover */
+.btn-glow {
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25),
+              0 0 60px rgba(255, 255, 255, 0.1);
+}
+
+/* Pulsing dot */
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Cursor blink */
+.cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Glow orbs */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.glow-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.5), transparent 70%);
+  top: 10%;
+  left: -5%;
+  animation: float-1 12s ease-in-out infinite;
+}
+
+.glow-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.4), transparent 70%);
+  top: 50%;
+  right: -5%;
+  animation: float-2 15s ease-in-out infinite;
+}
+
+.glow-orb-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
+  bottom: 5%;
+  left: 30%;
+  animation: float-3 10s ease-in-out infinite;
+}
+
+/* Mockup 3D tilt container */
+.tilt-card {
+  perspective: 1000px;
+}
+
+.tilt-card-inner {
+  transition: transform 0.15s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .glow-orb,
+  .pulse-dot,
+  .cursor-blink,
+  .animated-border,
+  .tilt-card-inner {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
